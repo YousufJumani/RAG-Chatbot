@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel – AI Support Chatbot</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+
+  <!-- ── Login Screen ─────────────────────────────────────────────────────── -->
+  <div id="login-screen" class="screen">
+    <div class="auth-card">
+      <h1 class="auth-card__title">Admin Login</h1>
+      <form id="login-form" novalidate>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" id="login-email" required autocomplete="username" />
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input type="password" id="login-password" required autocomplete="current-password" />
+        </label>
+        <p id="login-error" class="error-msg hidden"></p>
+        <button type="submit" class="btn btn--primary btn--full">Sign in</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Dashboard ────────────────────────────────────────────────────────── -->
+  <div id="dashboard-screen" class="screen hidden">
+    <nav class="sidebar">
+      <div class="sidebar__brand">
+        <span class="sidebar__logo">⚡</span>
+        <span class="sidebar__name">AI Support</span>
+      </div>
+      <ul class="sidebar__nav">
+        <li><button class="nav-btn active" data-section="overview">Overview</button></li>
+        <li><button class="nav-btn" data-section="documents">Knowledge Base</button></li>
+        <li><button class="nav-btn" data-section="conversations">Conversations</button></li>
+        <li><button class="nav-btn" data-section="settings">Settings</button></li>
+      </ul>
+      <button id="logout-btn" class="btn btn--ghost sidebar__logout">Log out</button>
+    </nav>
+
+    <main class="main-content">
+
+      <!-- Overview -->
+      <section id="section-overview" class="section active">
+        <h2 class="section__title">Overview</h2>
+        <div class="stat-grid">
+          <div class="stat-card"><span class="stat-card__value" id="stat-docs">–</span><span class="stat-card__label">Documents</span></div>
+          <div class="stat-card"><span class="stat-card__value" id="stat-chunks">–</span><span class="stat-card__label">Chunks</span></div>
+          <div class="stat-card"><span class="stat-card__value" id="stat-convs">–</span><span class="stat-card__label">Conversations</span></div>
+          <div class="stat-card"><span class="stat-card__value" id="stat-msgs">–</span><span class="stat-card__label">Messages</span></div>
+        </div>
+        <div class="api-key-card">
+          <h3>Your Widget API Key</h3>
+          <p class="api-key-hint">Include this key when embedding the chat widget.</p>
+          <div class="api-key-display">
+            <code id="api-key-value">loading…</code>
+            <button id="copy-key-btn" class="btn btn--sm">Copy</button>
+            <button id="rotate-key-btn" class="btn btn--sm btn--danger">Rotate</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Knowledge Base -->
+      <section id="section-documents" class="section hidden">
+        <h2 class="section__title">Knowledge Base</h2>
+        <div class="upload-zone" id="upload-zone">
+          <p>Drag &amp; drop PDF, DOCX, or TXT files here</p>
+          <label class="btn btn--primary upload-label">
+            Browse files
+            <input type="file" id="file-input" accept=".pdf,.docx,.doc,.txt" multiple hidden />
+          </label>
+        </div>
+        <div id="upload-progress" class="upload-progress hidden"></div>
+        <div id="documents-list" class="doc-list"></div>
+      </section>
+
+      <!-- Conversations -->
+      <section id="section-conversations" class="section hidden">
+        <h2 class="section__title">Conversations</h2>
+        <div class="conv-layout">
+          <div id="conv-list" class="conv-list">
+            <p class="muted">Loading…</p>
+          </div>
+          <div id="conv-detail" class="conv-detail">
+            <p class="muted empty-hint">Select a conversation to view messages</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="section-settings" class="section hidden">
+        <h2 class="section__title">Settings</h2>
+        <form id="settings-form" class="settings-form">
+          <label class="field">
+            <span>Business Name</span>
+            <input type="text" id="tenant-name" required />
+          </label>
+          <p id="settings-msg" class="success-msg hidden"></p>
+          <button type="submit" class="btn btn--primary">Save</button>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

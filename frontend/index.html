@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Support Chat</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="chat-wrapper">
+    <header class="chat-header">
+      <div class="chat-header__avatar">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+      </div>
+      <div class="chat-header__info">
+        <span class="chat-header__name">AI Support</span>
+        <span class="chat-header__status">Online</span>
+      </div>
+    </header>
+
+    <div id="messages" class="messages" aria-live="polite"></div>
+
+    <div id="typing-indicator" class="typing-indicator hidden">
+      <span></span><span></span><span></span>
+    </div>
+
+    <form id="chat-form" class="chat-input-bar">
+      <input
+        type="text"
+        id="user-input"
+        class="chat-input"
+        placeholder="Type a message…"
+        autocomplete="off"
+        aria-label="Chat message"
+        required
+      />
+      <button type="submit" class="send-btn" aria-label="Send">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </form>
+  </div>
+
+  <script src="/js/chat.js"></script>
+</body>
+</html>
