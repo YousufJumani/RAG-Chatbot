@@ -6,6 +6,20 @@ const { buildSystemPrompt } = require('../services/rag');
 const { resolveApiKey } = require('../middleware/auth');
 const { chatLimiter } = require('../middleware/rateLimiter');
 
+// GET /api/chat/config
+// Public bootstrap endpoint for widget-style chat integration.
+router.get('/config', (req, res) => {
+  const tenant = db
+    .prepare('SELECT id, name, api_key FROM tenants ORDER BY created_at ASC LIMIT 1')
+    .get();
+
+  if (!tenant) {
+    return res.status(503).json({ error: 'Chat is not configured yet' });
+  }
+
+  res.json({ apiKey: tenant.api_key, tenantName: tenant.name });
+});
+
 // All chat routes require a valid tenant API key
 router.use(resolveApiKey);
 router.use(chatLimiter);

@@ -58,8 +58,33 @@
     }
   }
 
+  async function refreshApiKeyFromPublicConfig() {
+    try {
+      const res = await fetch(`${API_BASE}/chat/config`);
+      if (!res.ok) return false;
+
+      const data = await res.json();
+      const nextKey = data?.apiKey;
+      if (!nextKey) return false;
+
+      apiKey = nextKey;
+      localStorage.setItem('chatApiKey', nextKey);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async function ensureApiKey() {
+    if (hasValidApiKey()) return true;
+    if (await refreshApiKeyFromAdminToken()) return true;
+    if (await refreshApiKeyFromPublicConfig()) return true;
+    return false;
+  }
+
   // ── Load history on page load ────────────────────────────────────────────────
   async function loadHistory() {
+    if (!(await ensureApiKey())) return;
     if (!sessionId) return;
     try {
       const r = await fetch(`${API_BASE}/chat/history?sessionId=${sessionId}`, {
@@ -84,12 +109,9 @@
 
   // ── Send message ─────────────────────────────────────────────────────────────
   async function sendMessage(text) {
-    if (!hasValidApiKey()) {
-      const refreshed = await refreshApiKeyFromAdminToken();
-      if (!refreshed) {
-        appendMessage('error', 'Missing chat API key. Open /admin, copy API key, then set localStorage.chatApiKey in this browser.');
-        return;
-      }
+    if (!(await ensureApiKey())) {
+      appendMessage('error', 'Chat is temporarily unavailable. Please try again in a moment.');
+      return;
     }
 
     appendMessage('user', text);
@@ -102,7 +124,7 @@
       let data = await res.json();
 
       if (!res.ok && data?.error === 'Invalid API key') {
-        const refreshed = await refreshApiKeyFromAdminToken();
+        const refreshed = (await refreshApiKeyFromAdminToken()) || (await refreshApiKeyFromPublicConfig());
         if (refreshed) {
           res = await postChat(text);
           data = await res.json();
