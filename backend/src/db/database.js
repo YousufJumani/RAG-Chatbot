@@ -1,8 +1,11 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
 
-const DB_DIR = path.join(__dirname, '../../data');
+const isVercel = Boolean(process.env.VERCEL);
+const DB_DIR = isVercel ? '/tmp' : path.join(__dirname, '../../data');
 const DB_PATH = path.join(DB_DIR, 'chatbot.db');
 
 if (!fs.existsSync(DB_DIR)) {
@@ -74,6 +77,36 @@ function initSchema() {
   `);
 }
 
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+function generateApiKey() {
+  return 'sk-' + crypto.randomBytes(24).toString('hex');
+}
+
+function bootstrapDefaultsIfNeeded() {
+  const existingTenant = db.prepare('SELECT id FROM tenants LIMIT 1').get();
+  if (existingTenant) return;
+
+  const tenantName = process.env.DEFAULT_TENANT_NAME || 'My Business';
+  const adminEmail = (process.env.ADMIN_EMAIL || 'admin@example.com').toLowerCase().trim();
+  const adminPassword = process.env.ADMIN_PASSWORD || 'changeme123';
+
+  const tenantId = uuidv4();
+  const userId = uuidv4();
+  const apiKey = generateApiKey();
+
+  db.prepare('INSERT INTO tenants (id, name, api_key) VALUES (?, ?, ?)')
+    .run(tenantId, tenantName, apiKey);
+
+  db.prepare('INSERT INTO users (id, tenant_id, email, password_hash, role) VALUES (?, ?, ?, ?, ?)')
+    .run(userId, tenantId, adminEmail, hashPassword(adminPassword), 'admin');
+
+  console.log('Bootstrapped default tenant and admin user.');
+}
+
 initSchema();
+bootstrapDefaultsIfNeeded();
 
 module.exports = db;
